@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'main_screen.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -65,10 +67,9 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             // 페이지 전 테스트페이지
             Text("랭킹페이지"),
-            Text("홈페이지"),
+            MainPage(), // 메인페이지
             Text("기록페이지"),
             /*RankPage(), // 랭킹페이지
-            MainPage(), // 메인페이지
             RecordPage() // 기록페이지*/
           ],
         index: _selectedIndex,
