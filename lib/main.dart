@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'main_screen.dart';
-import 'rank.dart'; // 랭킹 페이지 임포트
+import 'ranking_page.dart'; // 랭킹 페이지 임포트
 
 void main() {
   runApp(const MyApp());
