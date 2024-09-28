@@ -129,7 +129,7 @@ class _MainPageState extends State<MainPage> {
                       ),
                   ],
                 ),
-                SizedBox(height: 130), // 적절한 공간 추가
+                SizedBox(height: 110), // 적절한 공간 추가
                 StopWatch(), // 타이머 추가
               ],
             ),
