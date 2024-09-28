@@ -52,9 +52,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.table_rows), label: '랭킹'),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
-          BottomNavigationBarItem(icon: Icon(Icons.receipt), label: '기록')
+          BottomNavigationBarItem(icon: Image.asset('assets/solar_ranking-linear.png'), label: ''),
+          BottomNavigationBarItem(icon: Image.asset('assets/home_icon.png'), label: ''),
+          BottomNavigationBarItem(icon: Image.asset('assets/record.png'), label: '')
         ],
         onTap: (int idx){
           setState(() {
