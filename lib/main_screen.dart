@@ -48,6 +48,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+
   Widget categoryPage(Category category){
     String cat = "";
     switch(category){
@@ -55,6 +56,10 @@ class _MainPageState extends State<MainPage> {
       case Category.workout: cat = "workout"; break;
       case Category.hobby: cat = "hobby"; break;
     }
+    print(cat);
+    List<Color> colors = [Color(0xFFFFCE44), Color(0xFF24BB74), Color(0xFF004F9F)];
+    double value = 0.5;
+    int level = 20;
     return SizedBox.expand(
       child: Container(
         decoration: BoxDecoration(
@@ -73,22 +78,29 @@ class _MainPageState extends State<MainPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                        "Lv. 2",
+                        "Lv. "+level.toString(),
                       style: TextStyle(
+                        color: Colors.black,
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
-                        foreground: Paint()
-                          ..style = PaintingStyle.stroke
-                          ..strokeWidth = 2
-                          ..color = Colors.grey[300]!, // <-- Border color
                       ),
                     ),
                     LinearPercentIndicator(
                       width: 300.0,
-                      percent: 0.3,
+                      percent: value,
                       lineHeight: 20.0,
-                      trailing: Icon(Icons.circle),
+                      trailing: CircleAvatar(
+                        backgroundColor: Colors.white,
+                        child: Text(
+                            (level+1).toString(),
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 21,
+                          ),
+                        ),
+                      ),
                       barRadius: Radius.circular(30),
+                      progressColor: colors[(level~/10)%3],
                     )
                   ],
                 ),
@@ -102,8 +114,9 @@ class _MainPageState extends State<MainPage> {
                           },
                           icon: Icon(Icons.arrow_back_ios_new_outlined, color: Colors.white,size: 40,)
                       ),
+                    if(category == Category.study) Spacer(),
                     // 이미지 위치
-                    Spacer(),
+                    Image.asset('assets/character/'+cat+(level~/10+1).toString()+'.PNG', width: 270,),
                     if(category == Category.study || category == Category.workout)
                       IconButton(
                           onPressed: (){
@@ -121,86 +134,6 @@ class _MainPageState extends State<MainPage> {
       ),
     );
   }
-
-  /* Widget categoryPage(Category category){
-    return SizedBox.expand(
-      // child: Container(
-        child : Center(
-          child: Column(
-            children: [
-              // 카테고리 이름
-              Image.asset('assets/logo.png'),
-              /*Expanded(
-                child: Container(
-                  decoration: BoxDecoration(color: Colors.white),
-                    child:
-                ),
-              ),*/
-              //쿠민이 이미지
-              //Container(
-
-                //child: Column(
-                Column(
-                  children: [
-                    Spacer(),
-                    Row(
-                      children: [
-                        if(category == Category.workout || category == Category.hobby)
-                          IconButton(
-                              onPressed: (){
-                                pageController.animateToPage(nowPage-1, duration: Duration(milliseconds: 300), curve: Curves.linear);
-                              },
-                              icon: Icon(Icons.arrow_back_ios_new)
-                          ),
-                        // 이미지 위치
-                        Spacer(),
-                        if(category == Category.study || category == Category.workout)
-                          IconButton(
-                              onPressed: (){
-                                pageController.animateToPage(nowPage+1, duration: Duration(milliseconds: 300), curve: Curves.linear);
-                              },
-                              icon: Icon(Icons.arrow_forward_ios)
-                          ),
-                      ],
-                    ),
-                    SizedBox(height: 20,),
-                    // progressBar
-                    Row(
-                        children: [
-                          Spacer(),
-                          Column(
-                            children: [
-                              Text("Lv. 1"),
-                              LinearPercentIndicator(
-                                width: 300.0,
-                                percent: 0.3,
-                                lineHeight: 20.0,
-                                trailing: Icon(Icons.circle),
-                                barRadius: Radius.circular(30),
-                              ),
-                            ],
-                          ),
-                          Spacer()
-                        ]
-                    ),
-                    Spacer(),
-                  ],
-                ),
-              //),
-
-              // 시작버튼
-              ElevatedButton(
-                onPressed: (){},
-                child: Text("시작"),
-              )
-
-
-            ],
-          ),
-        ),
-      //),
-    );
-  }*/
 }
 
 
