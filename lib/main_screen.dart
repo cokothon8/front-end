@@ -52,7 +52,7 @@ class _MainPageState extends State<MainPage> {
           if(category == Category.hobby)
             Text("취미", style: TextStyle(fontSize: 18),),
           //쿠민이 이미지
-          
+
           Spacer(),
           Row(
             children: [
