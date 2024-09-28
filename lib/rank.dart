@@ -69,10 +69,12 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
                   children: [
                     _buildActionButton("취소", Colors.grey, () {
                       Navigator.of(context).pop(); // 팝업 닫기
+                      _nicknameController.clear(); // 텍스트필드 초기화
                     }),
                     _buildActionButton("추가", Colors.blue, () {
                       _followUser(_nicknameController.text); // 팔로우 함수 호출
                       Navigator.of(context).pop(); // 팝업 닫기
+                      _nicknameController.clear(); // 텍스트필드 초기화
                     }),
                   ],
                 ),
@@ -81,7 +83,9 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
           ),
         );
       },
-    );
+    ).then((_) {
+      _nicknameController.clear(); // 팝업이 닫힌 후 텍스트 필드 초기화
+    });
   }
 
   Widget _buildActionButton(String text, Color color, VoidCallback onPressed) {
