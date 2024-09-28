@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'main_screen.dart';
+import 'ranking_page.dart'; // 랭킹 페이지 임포트
 
 void main() {
   runApp(const MyApp());
@@ -9,7 +9,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -38,14 +37,15 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, });
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 0; // 기본 인덱스를 랭킹 페이지로 설정
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(icon: Image.asset('assets/home_icon.png'), label: ''),
           BottomNavigationBarItem(icon: Image.asset('assets/record.png'), label: '')
         ],
-        onTap: (int idx){
+        onTap: (int idx) {
           setState(() {
             _selectedIndex = idx;
           });
@@ -63,14 +63,11 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _selectedIndex,
       ),
       body: IndexedStack(
-          children: [
-            // 페이지 전 테스트페이지
-            Text("랭킹페이지"),
-            MainPage(), // 메인페이지
-            Text("기록페이지"),
-            /*RankPage(), // 랭킹페이지
-            RecordPage() // 기록페이지*/
-          ],
+        children: [
+          RankPage(), // 랭킹 페이지
+          MainPage(), // 메인 페이지
+          Text("기록 페이지"), // 기록 페이지
+        ],
         index: _selectedIndex,
       ),
     );
