@@ -1,6 +1,97 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+enum Category{study, workout, hobby}
+
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+
+  final pageController = PageController(initialPage: 0);
+  int nowPage = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        body: PageView(
+          controller: pageController,
+          onPageChanged: (index){
+            setState(() {
+              nowPage = index;
+            });
+            print(nowPage);
+          },
+          children: [
+            // 공부카테고리
+            categoryPage(Category.study),
+            // 운동 카테고리
+            categoryPage(Category.workout),
+            // 취미 카테고리
+            categoryPage(Category.hobby)
+          ]
+        )
+      ),
+    );
+  }
+
+  Widget categoryPage(Category category){
+    return SizedBox.expand(
+      child: Column(
+        children: [
+          // 카테고리 이름
+          if(category == Category.study)
+            Text("공부", style: TextStyle(fontSize: 18),),
+          if(category == Category.workout)
+            Text("운동", style: TextStyle(fontSize: 18),),
+          if(category == Category.hobby)
+            Text("취미", style: TextStyle(fontSize: 18),),
+          //쿠민이 이미지
+
+          Spacer(),
+          Row(
+            children: [
+              if(category == Category.workout || category == Category.hobby)
+                IconButton(
+                  onPressed: (){
+                    pageController.animateToPage(nowPage-1, duration: Duration(milliseconds: 300), curve: Curves.linear);
+                  },
+                  icon: Icon(Icons.arrow_back_ios_new)
+                ),
+              // 이미지 위치
+              Spacer(),
+              if(category == Category.study || category == Category.workout)
+                IconButton(
+                  onPressed: (){
+                    pageController.animateToPage(nowPage+1, duration: Duration(milliseconds: 300), curve: Curves.linear);
+                  },
+                  icon: Icon(Icons.arrow_forward_ios)
+                ),
+            ],
+          ),
+          SizedBox(height: 20,),
+          // progressBar
+          SizedBox(height: 30,),
+
+          // 시작버튼
+          ElevatedButton(
+            onPressed: (){},
+            child: Text("시작"),
+          )
+
+
+        ],
+      ),
+    );
+  }
+}
+
+
 class StopWatch extends StatefulWidget {
   @override
   _StopWatchState createState() => _StopWatchState();
