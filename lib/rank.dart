@@ -253,7 +253,7 @@ class RankingItem extends StatelessWidget {
                     ),
                     SizedBox(width: 8.0),
                     Text(
-                      '레벨 $level',
+                      'Lv.$level',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
