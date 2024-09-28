@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -16,6 +17,24 @@ class _MainPageState extends State<MainPage> {
 
   final pageController = PageController(initialPage: 0);
   int nowPage = 0;
+
+  int level = 0;
+  double value = 0;
+  String cat = "";
+
+  Dio dio = Dio();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    dio.options.baseUrl='http://10.223.116.175:8000';
+    dio.options.connectTimeout = Duration(seconds: 5);
+    dio.options.receiveTimeout = Duration(minutes: 3);
+    dio.options.headers =
+    {'Content-Type': 'application/json',
+    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJcdWFlNDBcdWJiZmNcdWMyMTgiLCJleHAiOjEwMzY3NTUwMzUxfQ.zu3i6IMRLMGmG5QSewGGtmb09pTq8H9SgOtxmd6kDcw'};
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +67,22 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+  _serverReq() async{
+    var response = await dio.get('/history/me');
+    String tmp = (cat=='workout')? 'excercise' : cat;
+    print(response.data);
+    setState(() {
+      level = response.data[tmp]['duration']~/480+1;
+      int itmp =response.data[tmp]['duration'];
+      value = itmp.toDouble()/480;
+      print(level);
+      print(value);
+    });
+  }
+
 
   Widget categoryPage(Category category){
-    String cat = "";
+    _serverReq();
     switch(category){
       case Category.study: cat = "study"; break;
       case Category.workout: cat = "workout"; break;
@@ -58,8 +90,6 @@ class _MainPageState extends State<MainPage> {
     }
     print(cat);
     List<Color> colors = [Color(0xFFFFCE44), Color(0xFF24BB74), Color(0xFF004F9F)];
-    double value = 0.5;
-    int level = 20;
     return SizedBox.expand(
       child: Container(
         decoration: BoxDecoration(
@@ -103,7 +133,7 @@ class _MainPageState extends State<MainPage> {
                         ),
                       ),
                       barRadius: Radius.circular(30),
-                      progressColor: colors[(level~/10)%3],
+                      progressColor: colors[(level~/10).clamp(0, colors.length-1)],
                     )
                   ],
                 ),
@@ -130,7 +160,7 @@ class _MainPageState extends State<MainPage> {
                   ],
                 ),
                 SizedBox(height: 110), // 적절한 공간 추가
-                StopWatch(), // 타이머 추가
+                StopWatch(nowPage: nowPage,), // 타이머 추가
               ],
             ),
           ),
@@ -141,17 +171,34 @@ class _MainPageState extends State<MainPage> {
 }
 
 class StopWatch extends StatefulWidget {
+  int nowPage;
+  StopWatch({required this.nowPage});
   @override
-  _StopWatchState createState() => _StopWatchState();
+  _StopWatchState createState() => _StopWatchState(this.nowPage);
 }
 
 class _StopWatchState extends State<StopWatch> {
+  Dio dio = Dio();
+  int nowPage;
+  _StopWatchState(this.nowPage);
   Timer? _timer; // 타이머
   var _time = 0; // 0.01초마다 1씩 증가시킬 정수형 변수
   var _isRunning = false; // 현재 시작 상태를 나타낼 불리언 변수
+  var sec;
 
   List<String> _lapTimes = []; // 랩타임에 표시할 시간을 저장할 리스트
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    dio.options.baseUrl='http://10.223.116.175:8000';
+    dio.options.connectTimeout = Duration(seconds: 5);
+    dio.options.receiveTimeout = Duration(seconds: 3);
+    dio.options.headers =
+    {'Content-Type': 'application/json',
+      'Authorization': 'Bearer <toekn>'};
+  }
   @override
   void dispose() {
     // 앱을 종료할 때 반복되는 동작 취소
@@ -166,6 +213,7 @@ class _StopWatchState extends State<StopWatch> {
       _start();
     } else {
       _pause();
+      // 서버에 history 보내기.
     }
   }
 
@@ -179,7 +227,14 @@ class _StopWatchState extends State<StopWatch> {
   }
 
   // 타이머 취소
-  void _pause() {
+  void _pause() async{
+    var response = await dio.post('/history', data: {
+      'category' : nowPage+1,
+      'duration' : sec,
+      'content' : 'asdf'
+    });
+    sec = 0;
+    _time = 0;
     _timer?.cancel();
   }
 
@@ -194,7 +249,7 @@ class _StopWatchState extends State<StopWatch> {
 
   // 내용 부분
   Widget _buildBody() {
-    var sec = _time ~/ 6000; // 1/100초 단위로 시간을 초로 변환
+    sec = _time ~/ 6000; // 1/100초 단위로 시간을 초로 변환
     String displayText = '$sec EXP'; // 타이머에 표시할 텍스트
 
     return Center(
