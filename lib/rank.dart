@@ -9,6 +9,9 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
   late TabController _tabController;
   final Color _selectedColor = Colors.blue; // 선택된 탭의 색상
 
+  bool _isEditMode = false; // 편집 모드 여부를 나타내는 변수
+  Set<int> _selectedItems = {}; // 선택된 아이템의 인덱스를 저장하는 집합
+
   final List<Map<String, dynamic>> studyRanking = [
     {'rank': 1, 'name': 'Alice', 'xp': 14340, 'level': 45},
     {'rank': 2, 'name': 'Bob', 'xp': 10000, 'level': 98},
@@ -106,6 +109,29 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
       ),
     );
   }
+  void _toggleEditMode() {
+    setState(() {
+      _isEditMode = !_isEditMode; // 편집 모드 토글
+    });
+  }
+
+  void _toggleItemSelection(int index) {
+    setState(() {
+      if (_selectedItems.contains(index)) {
+        _selectedItems.remove(index); // 이미 선택된 경우 선택 해제
+      } else {
+        _selectedItems.add(index); // 선택된 경우 추가
+      }
+    });
+  }
+
+  void _deleteSelectedItems() {
+    setState(() {
+      studyRanking.removeWhere((item) => _selectedItems.contains(studyRanking.indexOf(item)));
+      _selectedItems.clear(); // 선택된 항목 초기화
+      _isEditMode = false; // 편집 모드 종료
+    });
+  }
 
   void _followUser(String nickname) {
     // 여기서 닉네임을 가진 유저를 팔로우하는 로직을 추가하세요.
@@ -148,18 +174,25 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
             ),
             onPressed: _showAddFriendDialog,
           ),
-          actions: [
-            IconButton(
-              icon: Image.asset(
-                "assets/icon_pencil.png", // 친구 추가 아이콘 이미지 경로
-                width: 22,
-                height: 22,
-              ),
-              onPressed: () {
-                // 친구 추가 버튼 클릭 시 실행할 코드
-              },
-            ),
-          ],
+          actions: [ IconButton(
+            icon: _isEditMode ? Image.asset(
+          "assets/icon_delete.png", // 친구 추가 아이콘 이미지 경로
+          width: 22,
+          height: 22,
+        ) : Image.asset(
+          "assets/icon_pencil.png", // 친구 추가 아이콘 이미지 경로
+          width: 22,
+          height: 22,
+        ), // 아이콘을 편집 모드에 따라 변경
+            onPressed: () {
+              if (_isEditMode && _selectedItems.isNotEmpty) {
+                _deleteSelectedItems(); // 선택된 아이템 삭제
+              } else {
+                _toggleEditMode(); // 편집 모드 전환
+              }
+            },
+          ),
+  ],
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(kToolbarHeight - 8.0),
             child: Container(
@@ -199,9 +232,9 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
         body: TabBarView(
           controller: _tabController,
           children: [
-            RankingList(rankingData: studyRanking),
-            RankingList(rankingData: exerciseRanking),
-            RankingList(rankingData: hobbyRanking),
+            RankingList(rankingData: studyRanking, isEditMode: _isEditMode, selectedItems: _selectedItems, onItemTap: _toggleItemSelection),
+            RankingList(rankingData: exerciseRanking, isEditMode: _isEditMode, selectedItems: _selectedItems, onItemTap: _toggleItemSelection),
+            RankingList(rankingData: hobbyRanking, isEditMode: _isEditMode, selectedItems: _selectedItems, onItemTap: _toggleItemSelection),
           ],
         ),
       ),
@@ -211,8 +244,16 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
 
 class RankingList extends StatelessWidget {
   final List<Map<String, dynamic>> rankingData;
+  final bool isEditMode;
+  final Set<int> selectedItems;
+  final Function(int) onItemTap;
 
-  RankingList({required this.rankingData});
+  RankingList({
+    required this.rankingData,
+    required this.isEditMode,
+    required this.selectedItems,
+    required this.onItemTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -227,13 +268,24 @@ class RankingList extends StatelessWidget {
         itemCount: rankingData.length,
         itemBuilder: (context, index) {
           final item = rankingData[index];
+          final isSelected = selectedItems.contains(index);
+
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0), // 항목 간 세로 간격 추가
-            child: RankingItem(
-              rank: item['rank'],
-              name: item['name'],
-              xp: item['xp'],
-              level: item['level'],
+            padding: const EdgeInsets.symmetric(vertical: 8.0), // 각 아이템 간의 세로 간격 추가
+            child: GestureDetector(
+              onTap: () {
+                if (isEditMode) {
+                  onItemTap(index); // 편집 모드에서만 항목 선택 가능
+                }
+              },
+              child: RankingItem(
+                rank: item['rank'],
+                name: item['name'],
+                xp: item['xp'],
+                level: item['level'],
+                isSelected: isSelected, // 선택된 상태 전달
+                isEditMode: isEditMode, // 편집 모드 상태 전달
+              ),
             ),
           );
         },
@@ -247,15 +299,19 @@ class RankingItem extends StatelessWidget {
   final String name;
   final int xp;
   final int level;
-  final int maxXp = 14400; // 최대 경험치 값
+  final bool isSelected;
+  final bool isEditMode;
+  final int maxXp = 14400;
+
 
   RankingItem({
     required this.rank,
     required this.name,
     required this.xp,
     required this.level,
+    required this.isSelected,
+    required this.isEditMode,
   });
-
   @override
   Widget build(BuildContext context) {
     final List<Color> colors = [
@@ -274,11 +330,20 @@ class RankingItem extends StatelessWidget {
     }
 
     return Container(
-      padding: EdgeInsets.all(16.0), // 내부 여백
+      padding: EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Colors.white, // 아이템 배경 색상
-        borderRadius: BorderRadius.circular(20.0), // 둥근 모서리 설정
-
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20.0),
+        boxShadow: isSelected
+            ? [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.5), // 선택된 항목의 파란 그림자
+            blurRadius: 10.0,
+            spreadRadius: 3.0,
+            offset: Offset(0, 0),
+          ),
+        ]
+            : null, // 선택되지 않은 경우 그림자 없음
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center, // Row 내 요소들을 수직으로 가운데 정렬
