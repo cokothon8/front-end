@@ -29,6 +29,85 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
     {'rank': 2, 'name': 'Heidi', 'xp': 1100, 'level': 49},
     {'rank': 3, 'name': 'Ivan', 'xp': 1000, 'level': 37},
   ];
+  final TextEditingController _nicknameController = TextEditingController();
+
+  void _showAddFriendDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0), // 둥근 모서리 설정
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white, // 팝업 배경색
+              borderRadius: BorderRadius.circular(20.0), // 둥근 모서리 설정
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // 팝업의 크기를 내용에 맞게 조절
+              children: [
+                Text(
+                  "친구 추가",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 16.0),
+                TextField(
+                  controller: _nicknameController,
+                  decoration: InputDecoration(
+                    hintText: "닉네임을 입력하세요",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0), // 텍스트필드 둥근 모서리
+                    ),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildActionButton("취소", Colors.grey, () {
+                      Navigator.of(context).pop(); // 팝업 닫기
+                    }),
+                    _buildActionButton("추가", Colors.blue, () {
+                      _followUser(_nicknameController.text); // 팔로우 함수 호출
+                      Navigator.of(context).pop(); // 팝업 닫기
+                    }),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildActionButton(String text, Color color, VoidCallback onPressed) {
+    return Container(
+      width: 100,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color, // 버튼 배경색
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0), // 둥근 모서리 설정
+          ),
+        ),
+        onPressed: onPressed,
+        child: Text(
+          text,
+          style: TextStyle(color: Colors.white), // 버튼 텍스트 색상
+        ),
+      ),
+    );
+  }
+
+  void _followUser(String nickname) {
+    // 여기서 닉네임을 가진 유저를 팔로우하는 로직을 추가하세요.
+    print('Following user: $nickname');
+  }
+
 
   @override
   void initState() {
@@ -63,9 +142,7 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
               width: 24,
               height: 24,
             ),
-            onPressed: () {
-              // 친구 추가 버튼 클릭 시 실행할 코드
-            },
+            onPressed: _showAddFriendDialog,
           ),
           actions: [
             IconButton(
