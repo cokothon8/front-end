@@ -75,14 +75,17 @@ class _MainPageState extends State<MainPage> {
             child: Column(
               children: [
                 Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                        "Lv. "+level.toString(),
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                          "Lv. "+level.toString(),
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     LinearPercentIndicator(
@@ -126,7 +129,8 @@ class _MainPageState extends State<MainPage> {
                       ),
                   ],
                 ),
-
+                SizedBox(height: 130), // 적절한 공간 추가
+                StopWatch(), // 타이머 추가
               ],
             ),
           ),
@@ -135,7 +139,6 @@ class _MainPageState extends State<MainPage> {
     );
   }
 }
-
 
 class StopWatch extends StatefulWidget {
   @override
@@ -148,8 +151,10 @@ class _StopWatchState extends State<StopWatch> {
   var _isRunning = false; // 현재 시작 상태를 나타낼 불리언 변수
 
   List<String> _lapTimes = []; // 랩타임에 표시할 시간을 저장할 리스트
+
   @override
-  void dispose() { // 앱을 종료할 때 반복되는 동작 취소
+  void dispose() {
+    // 앱을 종료할 때 반복되는 동작 취소
     _timer?.cancel();
     super.dispose();
   }
@@ -157,7 +162,7 @@ class _StopWatchState extends State<StopWatch> {
   void _clickButton() {
     _isRunning = !_isRunning; // 상태 반전
 
-    if(_isRunning) {
+    if (_isRunning) {
       _start();
     } else {
       _pause();
@@ -166,8 +171,8 @@ class _StopWatchState extends State<StopWatch> {
 
   // 타이머 시작 1/100초에 한 번씩 time 변수를 1증가
   void _start() {
-    _timer = Timer.periodic(Duration(milliseconds:10), (timer) {
-      setState((){
+    _timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
+      setState(() {
         _time++;
       });
     });
@@ -182,41 +187,59 @@ class _StopWatchState extends State<StopWatch> {
     _lapTimes.insert(0, time); // 시간 리스트에 추가
   }
 
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('StopWatch'),
-      ),
-      body: _buildBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            setState(() {
-              _clickButton();
-            }),
-        child: _isRunning ? Icon(Icons.pause) : Icon(Icons.play_arrow),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-    );
+    return _buildBody();
   }
-  //내용 부분
 
+  // 내용 부분
   Widget _buildBody() {
-    var sec = _time ~/ 100; //초
-    var hundredth = '${_time % 100}'.padLeft(2, '0'); // 1/100초
+    var sec = _time ~/ 6000; // 1/100초 단위로 시간을 초로 변환
+    String displayText = '$sec EXP'; // 타이머에 표시할 텍스트
 
     return Center(
-      child:
-        Row( // 시간을 표시하는 영역
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children:<Widget>[
-            Text(
-              '$sec',
-              style: TextStyle(fontSize:70.0),
+      child: _isRunning
+          ? Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            displayText,
+            style: TextStyle(
+              fontSize: 30.0,
+              fontWeight: FontWeight.bold,
             ),
-            Text('$hundredth', style:TextStyle(fontSize:20)), // 1/100초
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.pause_circle_filled,
+              size: 45.0,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              setState(() {
+                _clickButton();
+              });
+            },
+          ),
         ],
       )
+          : ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30)),
+          foregroundColor: Colors.black,
+          backgroundColor: Colors.white,
+          minimumSize: Size(300, 60),
+          textStyle: const TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 30.0),
+        ),
+        onPressed: () {
+          setState(() {
+            _clickButton();
+          });
+        },
+        child: Text('시작하기'),
+      ),
     );
   }
 }
