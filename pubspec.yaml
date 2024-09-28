@@ -68,6 +68,15 @@ flutter:
    - assets/solar_ranking-linear.png
    - assets/record.png
    - assets/home_icon.png
+   - assets/character/study1.PNG
+   - assets/character/study2.PNG
+   - assets/character/study3.PNG
+   - assets/character/workout1.PNG
+   - assets/character/workout2.PNG
+   - assets/character/workout3.PNG
+   - assets/character/hobby1.PNG
+   - assets/character/hobby2.PNG
+   - assets/character/hobby3.PNG
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
