@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -18,11 +19,12 @@ class _MainPageState extends State<MainPage> {
   final pageController = PageController(initialPage: 0);
   int nowPage = 0;
 
-  int level = 0;
-  double value = 0;
+  Map<String, int> level = {'study': 0, 'workout':0, 'hobby':0};
+  Map<String, double> value = {'study': 0.0, 'workout': 0.0, 'hobby': 0.0};
   String cat = "";
 
   Dio dio = Dio();
+  var response;
 
   @override
   void initState() {
@@ -34,6 +36,11 @@ class _MainPageState extends State<MainPage> {
     dio.options.headers =
     {'Content-Type': 'application/json',
     'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJcdWFlNDBcdWJiZmNcdWMyMTgiLCJleHAiOjEwMzY3NTUwMzUxfQ.zu3i6IMRLMGmG5QSewGGtmb09pTq8H9SgOtxmd6kDcw'};
+    _asyncMethod();
+  }
+
+  void _asyncMethod() async{
+    response = await dio.get('/history/me');
   }
 
   @override
@@ -51,6 +58,8 @@ class _MainPageState extends State<MainPage> {
           onPageChanged: (index){
             setState(() {
               nowPage = index;
+              print(level);
+              print(value);
             });
             print(nowPage);
           },
@@ -68,26 +77,22 @@ class _MainPageState extends State<MainPage> {
   }
 
   _serverReq() async{
-    var response = await dio.get('/history/me');
-    String tmp = (cat=='workout')? 'excercise' : cat;
+    String tmp = (cat=='workout')? 'exercise' : cat;
     print(response.data);
-    setState(() {
-      level = response.data[tmp]['duration']~/480+1;
-      int itmp =response.data[tmp]['duration'];
-      value = itmp.toDouble()/480;
-      print(level);
-      print(value);
-    });
+      int itmp = 0;
+      level[cat] = response.data[tmp]['duration']~/480+1;
+      itmp =response.data[tmp]['duration'];
+      value[cat] = itmp.toDouble()/(480*level[cat]!.toInt());
   }
 
 
   Widget categoryPage(Category category){
-    _serverReq();
     switch(category){
       case Category.study: cat = "study"; break;
       case Category.workout: cat = "workout"; break;
       case Category.hobby: cat = "hobby"; break;
     }
+    _serverReq();
     print(cat);
     List<Color> colors = [Color(0xFFFFCE44), Color(0xFF24BB74), Color(0xFF004F9F)];
     return SizedBox.expand(
@@ -110,7 +115,7 @@ class _MainPageState extends State<MainPage> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                          "Lv. "+level.toString(),
+                          "Lv. "+level[cat].toString(),
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 30,
@@ -120,12 +125,12 @@ class _MainPageState extends State<MainPage> {
                     ),
                     LinearPercentIndicator(
                       width: 300.0,
-                      percent: value,
+                      percent: value[cat]!,
                       lineHeight: 20.0,
                       trailing: CircleAvatar(
                         backgroundColor: Colors.white,
                         child: Text(
-                            (level+1).toString(),
+                            (level[cat]!+1).toString(),
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 21,
@@ -133,7 +138,7 @@ class _MainPageState extends State<MainPage> {
                         ),
                       ),
                       barRadius: Radius.circular(30),
-                      progressColor: colors[(level~/10).clamp(0, colors.length-1)],
+                      progressColor: colors[(level[cat]!~/10).clamp(0, colors.length-1)],
                     )
                   ],
                 ),
@@ -149,7 +154,7 @@ class _MainPageState extends State<MainPage> {
                       ),
                     if(category == Category.study) Spacer(),
                     // 이미지 위치
-                    Image.asset('assets/character/'+cat+(level~/10+1).toString()+'.PNG', width: 270,),
+                    Image.asset('assets/character/'+cat+(level[cat]!.clamp(0, 29)~/10+1).toString()+'.PNG', width: 270,),
                     if(category == Category.study || category == Category.workout)
                       IconButton(
                           onPressed: (){
