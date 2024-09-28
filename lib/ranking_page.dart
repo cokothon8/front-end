@@ -84,6 +84,7 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
       }
     });
 
+    _fetchRankingData(0);
      }
 
 

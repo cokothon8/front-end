@@ -154,7 +154,7 @@ class _MainPageState extends State<MainPage> {
                       ),
                     if(category == Category.study) Spacer(),
                     // 이미지 위치
-                    Image.asset('assets/character/'+cat+(level[cat]!.clamp(0, 29)~/10+1).toString()+'.PNG', width: 270,),
+                    Image.asset('assets/character/'+cat+(level[cat]!.clamp(0, 29)~/10+1).toString()+'.PNG', width: 260,),
                     if(category == Category.study || category == Category.workout)
                       IconButton(
                           onPressed: (){
@@ -164,7 +164,7 @@ class _MainPageState extends State<MainPage> {
                       ),
                   ],
                 ),
-                SizedBox(height: 110), // 적절한 공간 추가
+                SizedBox(height: 100), // 적절한 공간 추가
                 StopWatch(nowPage: nowPage,), // 타이머 추가
               ],
             ),

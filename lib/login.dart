@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:koomingotchi/main.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,6 +25,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  BuildContext? buildcontext;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   Dio dio = Dio();
@@ -52,6 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
           String accessToken = response.data['access_token'];
           _loginMessage = '로그인 성공: 액세스 토큰: $accessToken';
         });
+        Navigator.pushReplacement(buildcontext!, MaterialPageRoute(builder: (builder)=>MyHomePage()));
       } else {
         setState(() {
           _loginMessage = '로그인 실패: 상태 코드 ${response.statusCode}';
@@ -66,6 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    buildcontext = context;
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text('로그인 페이지')),

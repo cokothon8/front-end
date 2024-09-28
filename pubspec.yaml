@@ -39,7 +39,6 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   percent_indicator: ^4.2.3
-  dio: ^5.0.0
 
 dev_dependencies:
   flutter_test:
@@ -53,15 +52,15 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^5.0.0
+  flutter_lints: ^3.0.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-  assets:
-    - assets/
+  # assets:
+  #   - assets/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -77,6 +76,13 @@ flutter:
    - assets/solar_ranking-linear.png
    - assets/record.png
    - assets/home_icon.png
+   - assets/icon_delete.png
+   - assets/icon_pencil.png
+   - assets/icon_user_add.png
+   - assets/rank_1.png
+   - assets/rank_2.png
+   - assets/rank_3.png
+   - assets/record.png
    - assets/character/study1.PNG
    - assets/character/study2.PNG
    - assets/character/study3.PNG
