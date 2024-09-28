@@ -46,41 +46,40 @@ class _StopWatchState extends State<StopWatch> {
     _lapTimes.insert(0, time); // 시간 리스트에 추가
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('StopWatch'),
       ),
       body: _buildBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            setState(() {
-              _clickButton();
-            }),
-        child: _isRunning ? Icon(Icons.pause) : Icon(Icons.play_arrow),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
   //내용 부분
 
   Widget _buildBody() {
-    var sec = _time ~/ 100; //초
-    var hundredth = '${_time % 100}'.padLeft(2, '0'); // 1/100초
+    // String start = '시작';
+    var sec = _time ~/ 100; //
+    String buttonText = _isRunning ? '$sec EXP' : '시작'; // 버튼 텍스트 상태에 따라 설정
 
     return Center(
-      child:
-        Row( // 시간을 표시하는 영역
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children:<Widget>[
-            Text(
-              '$sec',
-              style: TextStyle(fontSize:70.0),
-            ),
-            Text('$hundredth', style:TextStyle(fontSize:20)), // 1/100초
-        ],
-      )
+      child: ElevatedButton(
+              // child: Text('$start'),
+              style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(	//모서리를 둥글게
+              borderRadius: BorderRadius.circular(20)),
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.green,
+              textStyle:
+                const TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+              ),
+              onPressed: () => {
+                setState(() {
+                _clickButton();
+              })
+              },
+              child: Text('$buttonText')
+      ),
     );
   }
 }
