@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:percent_indicator/linear_percent_indicator.dart';
+
 enum Category{study, workout, hobby}
 
 class MainPage extends StatefulWidget {
@@ -19,6 +21,12 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          title: Image.asset('assets/logo.png'),
+        ),
+        backgroundColor: Colors.transparent,
         body: PageView(
           controller: pageController,
           onPageChanged: (index){
@@ -41,54 +49,158 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget categoryPage(Category category){
+    String cat = "";
+    switch(category){
+      case Category.study: cat = "study"; break;
+      case Category.workout: cat = "workout"; break;
+      case Category.hobby: cat = "hobby"; break;
+    }
     return SizedBox.expand(
-      child: Column(
-        children: [
-          // 카테고리 이름
-          if(category == Category.study)
-            Text("공부", style: TextStyle(fontSize: 18),),
-          if(category == Category.workout)
-            Text("운동", style: TextStyle(fontSize: 18),),
-          if(category == Category.hobby)
-            Text("취미", style: TextStyle(fontSize: 18),),
-          //쿠민이 이미지
-
-          Spacer(),
-          Row(
-            children: [
-              if(category == Category.workout || category == Category.hobby)
-                IconButton(
-                  onPressed: (){
-                    pageController.animateToPage(nowPage-1, duration: Duration(milliseconds: 300), curve: Curves.linear);
-                  },
-                  icon: Icon(Icons.arrow_back_ios_new)
-                ),
-              // 이미지 위치
-              Spacer(),
-              if(category == Category.study || category == Category.workout)
-                IconButton(
-                  onPressed: (){
-                    pageController.animateToPage(nowPage+1, duration: Duration(milliseconds: 300), curve: Curves.linear);
-                  },
-                  icon: Icon(Icons.arrow_forward_ios)
-                ),
-            ],
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image:
+            AssetImage('assets/'+cat+'_bg.png'),
+            fit: BoxFit.fill
           ),
-          SizedBox(height: 20,),
-          // progressBar
-          SizedBox(height: 30,),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                        "Lv. 2",
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        foreground: Paint()
+                          ..style = PaintingStyle.stroke
+                          ..strokeWidth = 2
+                          ..color = Colors.grey[300]!, // <-- Border color
+                      ),
+                    ),
+                    LinearPercentIndicator(
+                      width: 300.0,
+                      percent: 0.3,
+                      lineHeight: 20.0,
+                      trailing: Icon(Icons.circle),
+                      barRadius: Radius.circular(30),
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    // 왼쪽 오른쪽 화면 넘기기 아이콘
+                    if(category == Category.workout || category == Category.hobby)
+                      IconButton(
+                          onPressed: (){
+                            pageController.animateToPage(nowPage-1, duration: Duration(milliseconds: 300), curve: Curves.linear);
+                          },
+                          icon: Icon(Icons.arrow_back_ios_new_outlined, color: Colors.white,size: 40,)
+                      ),
+                    // 이미지 위치
+                    Spacer(),
+                    if(category == Category.study || category == Category.workout)
+                      IconButton(
+                          onPressed: (){
+                            pageController.animateToPage(nowPage+1, duration: Duration(milliseconds: 300), curve: Curves.linear);
+                          },
+                          icon: Icon(Icons.arrow_forward_ios_outlined, color: Colors.white,size: 40,)
+                      ),
+                  ],
+                ),
 
-          // 시작버튼
-          ElevatedButton(
-            onPressed: (){},
-            child: Text("시작"),
-          )
-
-
-        ],
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
+
+  /* Widget categoryPage(Category category){
+    return SizedBox.expand(
+      // child: Container(
+        child : Center(
+          child: Column(
+            children: [
+              // 카테고리 이름
+              Image.asset('assets/logo.png'),
+              /*Expanded(
+                child: Container(
+                  decoration: BoxDecoration(color: Colors.white),
+                    child:
+                ),
+              ),*/
+              //쿠민이 이미지
+              //Container(
+
+                //child: Column(
+                Column(
+                  children: [
+                    Spacer(),
+                    Row(
+                      children: [
+                        if(category == Category.workout || category == Category.hobby)
+                          IconButton(
+                              onPressed: (){
+                                pageController.animateToPage(nowPage-1, duration: Duration(milliseconds: 300), curve: Curves.linear);
+                              },
+                              icon: Icon(Icons.arrow_back_ios_new)
+                          ),
+                        // 이미지 위치
+                        Spacer(),
+                        if(category == Category.study || category == Category.workout)
+                          IconButton(
+                              onPressed: (){
+                                pageController.animateToPage(nowPage+1, duration: Duration(milliseconds: 300), curve: Curves.linear);
+                              },
+                              icon: Icon(Icons.arrow_forward_ios)
+                          ),
+                      ],
+                    ),
+                    SizedBox(height: 20,),
+                    // progressBar
+                    Row(
+                        children: [
+                          Spacer(),
+                          Column(
+                            children: [
+                              Text("Lv. 1"),
+                              LinearPercentIndicator(
+                                width: 300.0,
+                                percent: 0.3,
+                                lineHeight: 20.0,
+                                trailing: Icon(Icons.circle),
+                                barRadius: Radius.circular(30),
+                              ),
+                            ],
+                          ),
+                          Spacer()
+                        ]
+                    ),
+                    Spacer(),
+                  ],
+                ),
+              //),
+
+              // 시작버튼
+              ElevatedButton(
+                onPressed: (){},
+                child: Text("시작"),
+              )
+
+
+            ],
+          ),
+        ),
+      //),
+    );
+  }*/
 }
 
 
