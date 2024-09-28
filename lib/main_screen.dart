@@ -185,8 +185,8 @@ class _StopWatchState extends State<StopWatch> {
   var _time = 0; // 0.01초마다 1씩 증가시킬 정수형 변수
   var _isRunning = false; // 현재 시작 상태를 나타낼 불리언 변수
   var sec;
+  TextEditingController txtDescription = TextEditingController();
 
-  List<String> _lapTimes = []; // 랩타임에 표시할 시간을 저장할 리스트
 
   @override
   void initState() {
@@ -197,7 +197,7 @@ class _StopWatchState extends State<StopWatch> {
     dio.options.receiveTimeout = Duration(seconds: 3);
     dio.options.headers =
     {'Content-Type': 'application/json',
-      'Authorization': 'Bearer <toekn>'};
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJcdWJiZmNcdWMyYjlcdWQ2MzgiLCJleHAiOjEwMzY3NTU1OTMyfQ.B6PVScPsYPamBA7MvdYHwH4KdrSQ3RjI2DSgnaKS-mA'};
   }
   @override
   void dispose() {
@@ -212,7 +212,7 @@ class _StopWatchState extends State<StopWatch> {
     if (_isRunning) {
       _start();
     } else {
-      _pause();
+      showAlertDialog(context);
       // 서버에 history 보내기.
     }
   }
@@ -231,24 +231,20 @@ class _StopWatchState extends State<StopWatch> {
     var response = await dio.post('/history', data: {
       'category' : nowPage+1,
       'duration' : sec,
-      'content' : 'asdf'
+      'content' : txtDescription.text,
     });
     sec = 0;
     _time = 0;
     _timer?.cancel();
   }
 
-  void _recordLapTime(String time) {
-    _lapTimes.insert(0, time); // 시간 리스트에 추가
-  }
-
   @override
   Widget build(BuildContext context) {
-    return _buildBody();
+    return _buildBody(context);
   }
 
   // 내용 부분
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
     sec = _time ~/ 6000; // 1/100초 단위로 시간을 초로 변환
     String displayText = '$sec EXP'; // 타이머에 표시할 텍스트
 
@@ -290,11 +286,49 @@ class _StopWatchState extends State<StopWatch> {
         ),
         onPressed: () {
           setState(() {
-            _clickButton();
+            _isRunning = !_isRunning; // 상태 반전
+
+            if (_isRunning) {
+              _start();
+            } else {
+              showAlertDialog(context);
+              // 서버에 history 보내기.
+            }
           });
         },
         child: Text('시작하기'),
       ),
+    );
+  }
+  Future<dynamic> showAlertDialog(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('활동 기록 하기'),
+            content: SingleChildScrollView(
+              child: TextField(
+                controller: txtDescription,
+                decoration: InputDecoration(hintText: '오늘의 활동을 입력해주세요.'),
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    txtDescription.text = '';
+                  },
+                  child: Text('Cancel')),
+              ElevatedButton(
+                  onPressed: () {
+                    _pause();
+                    Navigator.pop(context);
+                  },
+                  child: Text('submit'),
+              )
+            ],
+          );
+        }
     );
   }
 }
