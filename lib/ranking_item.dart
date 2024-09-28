@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class RankingItem extends StatelessWidget {
   final int rank;
-  final String name;
-  final int xp;
+  final String username;
+  final int duration;
   final int level;
   final bool isSelected;
   final bool isEditMode;
@@ -11,8 +11,8 @@ class RankingItem extends StatelessWidget {
 
   RankingItem({
     required this.rank,
-    required this.name,
-    required this.xp,
+    required this.username,
+    required this.duration,
     required this.level,
     required this.isSelected,
     required this.isEditMode,
@@ -96,7 +96,7 @@ class RankingItem extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      name,
+                      username,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -119,7 +119,7 @@ class RankingItem extends StatelessWidget {
                       child: Container(),
                     ),
                     Text(
-                      '${xp.toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (match) => '${match.group(1)},')} XP',
+                      '${duration.toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (match) => '${match.group(1)},')} XP',
                       style: TextStyle(fontSize: 14.0),
                       textAlign: TextAlign.right,
                     ),
@@ -129,7 +129,7 @@ class RankingItem extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12.0),
                   child: LinearProgressIndicator(
-                    value: xp / maxXp,
+                    value: duration / maxXp,
                     backgroundColor: Colors.grey.shade300,
                     color: colors[colorIndex],
                     minHeight: 8.0,

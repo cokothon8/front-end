@@ -38,9 +38,9 @@ class RankingList extends StatelessWidget {
                 }
               },
               child: RankingItem(
-                rank: item['rank'],
-                name: item['name'],
-                xp: item['xp'],
+                rank: item['ranking'],
+                username: item['username'],
+                duration: item['total_duration'],
                 level: item['level'],
                 isSelected: isSelected,
                 isEditMode: isEditMode,

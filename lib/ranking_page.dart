@@ -1,5 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'ranking_list.dart'; // RankingList 컴포넌트를 import
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // Secure Storage 패키지 import
+import 'dart:convert';
+import 'dart:async';
 
 class RankPage extends StatefulWidget {
   @override
@@ -8,32 +13,80 @@ class RankPage extends StatefulWidget {
 
 class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final Color _selectedColor = Colors.blue; // 선택된 탭의 색상
+  final String BASE_URL = 'http://10.223.116.175:8000';
+
 
   bool _isEditMode = false; // 편집 모드 여부를 나타내는 변수
   Set<int> _selectedItems = {}; // 선택된 아이템의 인덱스를 저장하는 집합
 
-  final List<Map<String, dynamic>> studyRanking = [
-    {'rank': 1, 'name': 'Alice', 'xp': 14340, 'level': 45},
-    {'rank': 2, 'name': 'Bob', 'xp': 10000, 'level': 98},
-    {'rank': 3, 'name': 'Charlie', 'xp': 1300, 'level': 75},
-    {'rank': 4, 'name': 'Alice', 'xp': 14340, 'level': 45},
-    {'rank': 5, 'name': 'Bob', 'xp': 10000, 'level': 98},
-    {'rank': 6, 'name': 'Charlie', 'xp': 1300, 'level': 75},
-  ];
+  List<Map<String, dynamic>> studyRanking = [];
+  List<Map<String, dynamic>> exerciseRanking = [];
+  List<Map<String, dynamic>> hobbyRanking = [];
 
-  final List<Map<String, dynamic>> exerciseRanking = [
-    {'rank': 1, 'name': 'David', 'xp': 1800, 'level': 50},
-    {'rank': 2, 'name': 'Eve', 'xp': 1600, 'level': 22},
-    {'rank': 3, 'name': 'Frank', 'xp': 1400, 'level': 73},
-  ];
-
-  final List<Map<String, dynamic>> hobbyRanking = [
-    {'rank': 1, 'name': 'Grace', 'xp': 1200, 'level': 61},
-    {'rank': 2, 'name': 'Heidi', 'xp': 1100, 'level': 49},
-    {'rank': 3, 'name': 'Ivan', 'xp': 1000, 'level': 37},
-  ];
   final TextEditingController _nicknameController = TextEditingController();
+
+  Dio dio = Dio();
+
+  // GET 요청: 토큰 포함하여 랭킹 데이터 가져오기
+  Future<void> _fetchRankingData(int category) async {
+
+    // category에 따라 URL 변경
+    String url;
+    switch (category) {
+      case 0: // 공부 탭
+        url = '/history/ranking/1';
+        break;
+      case 1: // 운동 탭
+        url = '/history/ranking/2';
+        break;
+      case 2: // 취미 탭
+        url = '/history/ranking/3';
+        break;
+      default:
+        url = '/history/ranking/1';
+    }
+
+    var response = await dio.get(url);
+    print(response);
+
+    if (response.statusCode == 200) {
+      setState(() {
+        if (category == 0) {
+          studyRanking = List<Map<String, dynamic>>.from(response.data);
+        } else if (category == 1) {
+          exerciseRanking = List<Map<String, dynamic>>.from(response.data);
+        } else if (category == 2) {
+          hobbyRanking = List<Map<String, dynamic>>.from(response.data);
+        }
+      });
+    } else {
+      print('Failed to load data');
+    }
+
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    dio.options.baseUrl='http://10.223.116.175:8000';
+    dio.options.connectTimeout = Duration(seconds: 10);
+    dio.options.receiveTimeout = Duration(minutes: 3);
+    dio.options.headers =
+    {'Content-Type': 'application/json',
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJcdWFlNDBcdWJiZmNcdWMyMTgiLCJleHAiOjEwMzY3NTUwMzUxfQ.zu3i6IMRLMGmG5QSewGGtmb09pTq8H9SgOtxmd6kDcw'};
+
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        _fetchRankingData(_tabController.index); // 탭 변경 시 데이터 로드
+      }
+    });
+
+     }
+
+
 
   void _showAddFriendDialog() {
     showDialog(
@@ -127,23 +180,52 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
     });
   }
 
-  void _deleteSelectedItems() {
+  // 선택된 친구 삭제 요청 함수 추가
+  Future<void> _deleteUser(String username) async {
+    final url = '/follow/$username'; // 실제 API URL로 변경
+    final response = await dio.delete(url);
+
+    if (response.statusCode == 200) {
+      _fetchRankingData(_tabController.index); // 성공 시 데이터 다시 로드
+    } else {
+      print('Failed to delete user');
+    }
+  }
+
+  // _deleteSelectedItems 함수 수정
+  void _deleteSelectedItems() async {
+    for (int index in _selectedItems) {
+      final item = studyRanking[index];
+      await _deleteUser(item['username']); // 친구 삭제 요청 보내기
+    }
+
     setState(() {
-      studyRanking.removeWhere((item) => _selectedItems.contains(studyRanking.indexOf(item)));
       _selectedItems.clear(); // 선택된 항목 초기화
       _isEditMode = false; // 편집 모드 종료
     });
+
+    await _fetchRankingData(_tabController.index);
   }
 
-  void _followUser(String nickname) {
+  Future<void> _followUser(String nickname) async {
     print('Following user: $nickname');
+
+
+    final response = await dio.post('/follow/$nickname', data: {
+      'username':nickname,
+    });
+
+
+    if (response.statusCode == 200) {
+      _fetchRankingData(_tabController.index); // 성공 시 데이터 다시 로드
+      print("success");
+    } else {
+      print('Failed to add user');
+    }
+    _fetchRankingData(_tabController.index);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-  }
+
 
   @override
   void dispose() {
