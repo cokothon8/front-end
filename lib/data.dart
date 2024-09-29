@@ -257,15 +257,15 @@ class _BarChartSampleState extends State<BarChartSample> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '닉네임 님 \n오늘은 얼마나 성장하셨나요?',
+                    '오늘은 얼마나 성장하셨나요?',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 25,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(height: 8),
                   Text(
-                    '2024년 9월 30일',
+                    '2024년 9월 29일',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.normal,
@@ -288,14 +288,14 @@ class _BarChartSampleState extends State<BarChartSample> {
                 children: [
                   Column(
                     children: [
-                      TextBox('역대 최고 공부 EXP \n$experienceStudyTotal'),
+                      TextBox('역대 최고 공부 XP \n$experienceStudyTotal'),
                       SizedBox(height: 8),
-                      TextBox('역대 최고 취미 EXP \n$experienceHobbyTotal'),
+                      TextBox('역대 최고 취미 XP \n$experienceHobbyTotal'),
                     ],
                   ),
                   Column(
                     children: [
-                      TextBox('역대 최고 운동 EXP \n$experienceExerciseTotal'),
+                      TextBox('역대 최고 운동 XP \n$experienceExerciseTotal'),
                       SizedBox(height: 8),
                       TextBox('역대 최고 카테고리 \n$maxCategory'),
                     ],

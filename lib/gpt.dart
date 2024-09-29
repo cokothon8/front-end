@@ -54,19 +54,6 @@ class _FastApiExampleState extends State<FastApiExample> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Enter JWT Token:'),
-            TextField(
-              onChanged: (value) {
-                setState(() {
-                  jwtToken = value; // 입력된 JWT 토큰을 변수에 저장
-                });
-              },
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'JWT Token',
-              ),
-            ),
-            SizedBox(height: 16),
             ElevatedButton(
               onPressed: fetchMessages, // 버튼 클릭 시 API 호출
               child: Text('Fetch Messages'),
@@ -76,7 +63,7 @@ class _FastApiExampleState extends State<FastApiExample> {
             TextField(
               controller: TextEditingController(text: studyMessage),
               readOnly: true,
-              maxLines: 3,
+              maxLines: 6,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
               ),
@@ -86,7 +73,7 @@ class _FastApiExampleState extends State<FastApiExample> {
             TextField(
               controller: TextEditingController(text: exerciseMessage),
               readOnly: true,
-              maxLines: 3,
+              maxLines: 6,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
               ),
@@ -96,7 +83,7 @@ class _FastApiExampleState extends State<FastApiExample> {
             TextField(
               controller: TextEditingController(text: hobbyMessage),
               readOnly: true,
-              maxLines: 3,
+              maxLines: 6,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
               ),

@@ -5,6 +5,8 @@ import 'dart:async';
 
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
+import 'gpt.dart';
+
 enum Category{study, workout, hobby}
 
 class MainPage extends StatefulWidget {
@@ -65,11 +67,11 @@ class _MainPageState extends State<MainPage> {
           },
           children: [
             // 공부카테고리
-            categoryPage(Category.study),
+            categoryPage(Category.study, context),
             // 운동 카테고리
-            categoryPage(Category.workout),
+            categoryPage(Category.workout, context),
             // 취미 카테고리
-            categoryPage(Category.hobby)
+            categoryPage(Category.hobby, context)
           ]
         )
       ),
@@ -86,7 +88,7 @@ class _MainPageState extends State<MainPage> {
   }
 
 
-  Widget categoryPage(Category category){
+  Widget categoryPage(Category category, BuildContext context){
     switch(category){
       case Category.study: cat = "study"; break;
       case Category.workout: cat = "workout"; break;
@@ -120,6 +122,10 @@ class _MainPageState extends State<MainPage> {
                           color: Colors.black,
                           fontSize: 30,
                           fontWeight: FontWeight.bold,
+                          /*foreground: Paint()
+                            ..style = PaintingStyle.stroke
+                            ..strokeWidth = 3
+                            ..color = Colors.white,*/
                         ),
                       ),
                     ),
@@ -134,6 +140,7 @@ class _MainPageState extends State<MainPage> {
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 21,
+                            fontWeight: FontWeight.bold
                           ),
                         ),
                       ),
@@ -154,7 +161,12 @@ class _MainPageState extends State<MainPage> {
                       ),
                     if(category == Category.study) Spacer(),
                     // 이미지 위치
-                    Image.asset('assets/character/'+cat+(level[cat]!.clamp(0, 29)~/10+1).toString()+'.PNG', width: 260,),
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (builder)=> FastApiExample()));
+                      },
+                        child: Image.asset('assets/character/'+cat+(level[cat]!.clamp(0, 29)~/10+1).toString()+'.PNG', width: 260,)
+                    ),
                     if(category == Category.study || category == Category.workout)
                       IconButton(
                           onPressed: (){
@@ -251,7 +263,7 @@ class _StopWatchState extends State<StopWatch> {
   // 내용 부분
   Widget _buildBody(BuildContext context) {
     sec = _time ~/ 6000; // 1/100초 단위로 시간을 초로 변환
-    String displayText = '$sec EXP'; // 타이머에 표시할 텍스트
+    String displayText = '$sec XP'; // 타이머에 표시할 텍스트
 
     return Center(
       child: _isRunning
@@ -261,7 +273,7 @@ class _StopWatchState extends State<StopWatch> {
           Text(
             displayText,
             style: TextStyle(
-              fontSize: 30.0,
+              fontSize: 32.0,
               fontWeight: FontWeight.bold,
             ),
           ),
