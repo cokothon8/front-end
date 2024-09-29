@@ -21,7 +21,7 @@ class _MainPageState extends State<MainPage> {
 
   Map<String, int> level = {'study': 0, 'workout':0, 'hobby':0};
   Map<String, double> value = {'study': 0.0, 'workout': 0.0, 'hobby': 0.0};
-  String cat = "";
+  String cat = "study";
 
   Dio dio = Dio();
   var response;
